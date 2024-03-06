@@ -3,6 +3,7 @@
 namespace TikTakWebAPI.Controllers;
 
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -48,21 +49,17 @@ public async Task<IActionResult> Put(IFormFile file)
     var outputDir = Path.Combine("Videos", Path.GetFileNameWithoutExtension(file.FileName));
     Directory.CreateDirectory(outputDir);
 
-    var command = $"ffmpeg -i {filePath} -profile:v baseline -level 3.0 -s 640x360 -start_number 0 -hls_time 10 -hls_list_size 0 -f hls {outputDir}/index.m3u8";
+    _logger.LogInformation("Running commands");
 
-    _logger.LogInformation("Running command: {Command}", command);
+    Video240p(filePath, outputDir);
+    Video360p(filePath, outputDir);
+    Video480p(filePath, outputDir);
+    Video720p(filePath, outputDir);
+    Video1080p(filePath, outputDir);
+    MakeIndexFile(filePath, outputDir, Path.GetFileNameWithoutExtension(file.FileName));
 
-    ProcessStartInfo ProcessInfo;
-    Process Process;
 
-    ProcessInfo = new ProcessStartInfo("cmd.exe", "/c " + command);
-    ProcessInfo.CreateNoWindow = true;
-    ProcessInfo.UseShellExecute = false;
-
-    Process = Process.Start(ProcessInfo);
-    Process.WaitForExit();
-
-    _logger.LogInformation("Command executed");
+    _logger.LogInformation("Commands executed");
 
     return new OkResult();
 }
@@ -75,9 +72,10 @@ public IActionResult GetHlsPlaylist(string name)
         return GetHlsSegment(name);
     }
 
+    string filePath = "";
     _logger.LogInformation("Received a GET request for HLS playlist: {Name}", name);
 
-    var filePath = Path.Combine(_env.ContentRootPath, "Videos", name, "index.m3u8");
+    filePath = Path.Combine(_env.ContentRootPath, "Videos", name, "index.m3u8");
     if (!System.IO.File.Exists(filePath))
     {
         _logger.LogWarning("File not found: {FilePath}", filePath);
@@ -85,6 +83,8 @@ public IActionResult GetHlsPlaylist(string name)
     }
 
     _logger.LogInformation("Returning file: {FilePath}", filePath);
+
+
     return new PhysicalFileResult(filePath, "application/vnd.apple.mpegurl");
 }
 
@@ -116,6 +116,107 @@ private IActionResult GetHlsSegment(string path)
 
     _logger.LogInformation("Returning file: {FilePath}", filePath);
     return new PhysicalFileResult(filePath, "video/MP2T");
+}
+
+
+
+
+private void Video240p(string filepath, string outputDir){
+
+    string command = $"ffmpeg -i \"{filepath}\" " + 
+    "-vf scale=w=426:h=240:force_original_aspect_ratio=decrease -c:a aac "+ 
+    "-ar 48000 -c:v h264 -profile:v main -crf 20 -sc_threshold 0 -g 48 "+ 
+    "-keyint_min 48 -hls_time 4 -hls_playlist_type vod -b:v 240k "+ 
+    "-maxrate 240k -bufsize 480k -b:a 64k -hls_segment_filename " + outputDir + "/240p_%d.ts " + outputDir + "/240p.m3u8";
+
+
+    RunCommand(command);
+}
+
+private void Video360p(string filepath, string outputDir){
+    string command = $"ffmpeg -i \"{filepath}\" " + 
+    "-vf scale=w=640:h=360:force_original_aspect_ratio=decrease -c:a aac "+ 
+    "-ar 48000 -c:v h264 -profile:v main -crf 20 -sc_threshold 0 -g 48 "+ 
+    "-keyint_min 48 -hls_time 4 -hls_playlist_type vod -b:v 800k "+ 
+    "-maxrate 856k -bufsize 1200k -b:a 96k -hls_segment_filename " + outputDir + "/360p_%d.ts " + outputDir + "/360p.m3u8";
+
+    RunCommand(command);
+}
+
+private void Video480p(string filepath, string outputDir){
+
+    string command = $"ffmpeg -i \"{filepath}\" " + 
+    "-vf scale=w=842:h=480:force_original_aspect_ratio=decrease -c:a aac "+ 
+    "-ar 48000 -c:v h264 -profile:v main -crf 20 -sc_threshold 0 -g 48 "+ 
+    "-keyint_min 48 -hls_time 4 -hls_playlist_type vod -b:v 1400k "+ 
+    "-maxrate 1498k -bufsize 2100k -b:a 128k -hls_segment_filename " + outputDir + "/480p_%d.ts " + outputDir + "/480p.m3u8";
+
+    RunCommand(command);
+}
+
+private void Video720p(string filepath, string outputDir){
+
+    string command = $"ffmpeg -i \"{filepath}\" " + 
+    "-vf scale=w=1280:h=720:force_original_aspect_ratio=decrease -c:a aac "+ 
+    "-ar 48000 -c:v h264 -profile:v main -crf 20 -sc_threshold 0 -g 48 "+ 
+    "-keyint_min 48 -hls_time 4 -hls_playlist_type vod -b:v 2800k "+ 
+    "-maxrate 2996k -bufsize 4200k -b:a 128k -hls_segment_filename " + outputDir + "/720p_%d.ts " + outputDir + "/720p.m3u8";
+
+    RunCommand(command);
+}
+
+private void Video1080p(string filepath, string outputDir){
+
+    string command = $"ffmpeg -i \"{filepath}\" " + 
+    "-vf scale=w=1920:h=1080:force_original_aspect_ratio=decrease -c:a aac "+ 
+    "-ar 48000 -c:v h264 -profile:v main -crf 20 -sc_threshold 0 -g 48 "+ 
+    "-keyint_min 48 -hls_time 4 -hls_playlist_type vod -b:v 5000k "+ 
+    "-maxrate 5350k -bufsize 7500k -b:a 192k -hls_segment_filename " + outputDir + "/1080p_%d.ts " + outputDir + "/1080p.m3u8";
+
+    RunCommand(command);
+}
+
+private void MakeIndexFile(string filepath, string outputDir, string videoname){
+                _logger.LogInformation(filepath);
+                //Create index as master playlist  
+                string path = outputDir + "/index.m3u8";  
+                File.Create(path).Dispose();  
+                string[] line ={  
+                    "#EXTM3U",  
+                    "#EXT-X-VERSION:3",  
+                    "#EXT-X-STREAM-INF:BANDWIDTH=10000,RESOLUTION=426x240",  
+                    $"../stream/{videoname}/240p.m3u8",  
+                    "#EXT-X-STREAM-INF:BANDWIDTH=420000,RESOLUTION=640x360",  
+                    $"../stream/{videoname}/360p.m3u8",  
+                    "#EXT-X-STREAM-INF:BANDWIDTH=680000,RESOLUTION=842x480",  
+                    $"../stream/{videoname}/480p.m3u8",  
+                    "#EXT-X-STREAM-INF:BANDWIDTH=1256000,RESOLUTION=1280x720",  
+                    $"../stream/{videoname}/720p.m3u8",  
+                    "#EXT-X-STREAM-INF:BANDWIDTH=2000000,RESOLUTION=1920x1080",  
+                    $"../stream/{videoname}/1080p.m3u8"  
+                };  
+                File.WriteAllLines(path, line);
+}
+
+private void RunCommand(string command){
+    ProcessStartInfo ProcessInfo;
+    Process Process;
+    if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)){
+    ProcessInfo = new ProcessStartInfo("foot", command);
+    ProcessInfo.CreateNoWindow = true;
+    ProcessInfo.UseShellExecute = false;
+    ProcessInfo.RedirectStandardError = true;
+
+    }else {
+    ProcessInfo = new ProcessStartInfo("cmd.exe","/c" + command);
+    ProcessInfo.CreateNoWindow = true;
+    ProcessInfo.UseShellExecute = false;
+    }
+
+    Process = Process.Start(ProcessInfo);
+    string errors = Process.StandardError.ReadToEnd();
+    _logger.LogError(errors);
+    Process.WaitForExit();
 }
     
 }
