@@ -13,20 +13,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const title = 'TikTak';
-
     return MaterialApp(
-      title: title,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.deepPurple,
+            // Color theme is based on OS DarkMode
+            // Meaning it follows the UI of the device
+            brightness: MediaQuery.of(context).platformBrightness),
         useMaterial3: true,
       ),
-      // home: const MyHomePage(),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const HomePage(title: title),
-      },
+      home: const HomePage(),
     );
   }
 }
