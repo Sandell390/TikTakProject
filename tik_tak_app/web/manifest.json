@@ -1,6 +1,6 @@
 {
-    "name": "tik_tak_app",
-    "short_name": "tik_tak_app",
+    "name": "TikTak",
+    "short_name": "TikTak",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

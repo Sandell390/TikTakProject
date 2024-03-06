@@ -1,10 +1,16 @@
-import 'package:flutter/material.dart';
+import 'imports.dart';
 
 void main() {
-  runApp(MyApp());
+  // Ensure the widgets have been initialized before starting the app
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Start the app
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -12,12 +18,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -27,7 +35,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('TikTak'),
+        title: const Text('TikTak'),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -36,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               height: 200, // Adjust height as needed
               color: Colors.grey[300], // Placeholder for video
-              child: Center(
+              child: const Center(
                 child: Icon(
                   Icons.play_arrow,
                   size: 50,
@@ -48,16 +56,16 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  CircleAvatar(
+                  const CircleAvatar(
                     radius: 25,
                     backgroundColor: Color.fromRGBO(149, 30, 162, 1.0),
                     // Placeholder for user profile image
                     // You can replace this with an actual image
                     child: Icon(Icons.person),
                   ),
-                  Expanded(
+                  const Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      padding: EdgeInsets.symmetric(horizontal: 8.0),
                       child: Text(
                         'User Name',
                         style: TextStyle(
@@ -67,25 +75,25 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.favorite_border),
+                    icon: const Icon(Icons.favorite_border),
                     onPressed: () {
                       // Handle like button press
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.comment),
+                    icon: const Icon(Icons.comment),
                     onPressed: () {
                       // Handle comment button press
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.share),
+                    icon: const Icon(Icons.share),
                     onPressed: () {
                       // Handle share button press
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.more_vert),
+                    icon: const Icon(Icons.more_vert),
                     onPressed: () {
                       // Handle more button press
                     },
@@ -94,8 +102,8 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             // Placeholder for caption
-            Padding(
-              padding: const EdgeInsets.all(8.0),
+            const Padding(
+              padding: EdgeInsets.all(8.0),
               child: Text(
                 'Caption text',
                 style: TextStyle(
@@ -104,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             // Placeholder for comments
-            ListTile(
+            const ListTile(
               leading: CircleAvatar(
                 // Placeholder for commenter profile image
                 // You can replace this with an actual image
@@ -114,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
               subtitle: Text('Comment text'),
             ),
             // Placeholder for more comments
-            ListTile(
+            const ListTile(
               leading: CircleAvatar(
                 // Placeholder for commenter profile image
                 // You can replace this with an actual image
@@ -128,7 +136,7 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () {
                 // Handle more comments button press
               },
-              child: Text('View more comments'),
+              child: const Text('View more comments'),
             ),
           ],
         ),
