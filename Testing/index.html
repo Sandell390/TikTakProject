@@ -15,6 +15,7 @@
                 videos.forEach(video => {
                     var videoElement = document.createElement('video');
                     videoElement.id = video;
+                    videoElement.setAttribute("width", "100%")
                     videosDiv.appendChild(videoElement);
 
                     var playButton = document.createElement('button');
