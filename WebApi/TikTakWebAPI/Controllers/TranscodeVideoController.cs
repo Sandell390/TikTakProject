@@ -116,4 +116,6 @@ public class TranscodeVideoController
         return new PhysicalFileResult(filePath, "video/MP2T");
     }
 
+
+    // GetVideoProcessStatus | The percent of the video process can be based on how many resolution there has been done
 }
