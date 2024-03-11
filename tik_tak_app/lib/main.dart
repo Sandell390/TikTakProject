@@ -5,11 +5,11 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Start the app
-  runApp(const MyApp());
+  runApp(const TikTakApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class TikTakApp extends StatelessWidget {
+  const TikTakApp({super.key});
 
   @override
   Widget build(BuildContext context) {

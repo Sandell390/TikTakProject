@@ -12,6 +12,7 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.2
   rename_app: ^1.3.1
+  video_player: ^2.8.3
   ## Run:
   ## dart run rename_app:main all="New App Name"
   ## to rename the app

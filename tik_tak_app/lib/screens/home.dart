@@ -1,4 +1,4 @@
-import '../imports.dart';
+import '/imports.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -10,6 +10,7 @@ class HomePage extends StatelessWidget {
     var appBarBottomHeight = ((mediaQueryHeight / 100) * 10);
     var sidePadding = ((mediaQueryWidth / 100) * 5);
     var iconSize = ((mediaQueryHeight / 100) * 6);
+    var textHeight = 1.4;
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -20,20 +21,7 @@ class HomePage extends StatelessWidget {
               height: mediaQueryHeight - appBarBottomHeight,
               color: const Color.fromARGB(255, 190, 190, 190), // Placeholder for video
               child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: const Icon(
-                        Icons.play_arrow,
-                        size: 50,
-                        color: Color.fromARGB(100, 255, 255, 255),
-                      ),
-                      onPressed: () => _showSnackBar(context, 'Play button pressed'),
-                    ),
-                    const Text("Press to play"),
-                  ],
-                ),
+                child: VideoScreen(),
               ),
             ),
             Container(
@@ -44,131 +32,71 @@ class HomePage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color.fromARGB(255, 81, 255, 0),
-                        width: 1,
+                  Column(
+                    children: [
+                      SizedBox(
+                        height: iconSize,
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.home,
+                            // Icons.home_outlined,
+                            color: Colors.white70,
+                            size: iconSize,
+                          ),
+                          onPressed: () => _showSnackBar(context, 'Home button pressed'),
+                        ),
                       ),
-                    ),
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: iconSize,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: const Color.fromARGB(255, 255, 0, 0),
-                              ),
-                            ),
-                            child: IconButton(
-                              icon: Icon(
-                                Icons.home,
-                                // Icons.home_outlined,
-                                color: Colors.white70,
-                                size: iconSize,
-                              ),
-                              onPressed: () => _showSnackBar(context, 'Home button pressed'),
-                            ),
-                          ),
+                      Text(
+                        "Start",
+                        style: TextStyle(
+                          height: textHeight,
                         ),
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: const Color.fromARGB(255, 255, 196, 0),
-                              width: 1,
-                            ),
-                          ),
-                          child: const Text(
-                            "Start",
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color.fromARGB(255, 81, 255, 0),
-                        width: 1,
+                  Column(
+                    children: [
+                      SizedBox(
+                        height: iconSize,
+                        child: IconButton(
+                          icon: Icon(
+                            // Icons.add_circle,
+                            Icons.add_circle_outline,
+                            color: Colors.white70,
+                            size: iconSize,
+                          ),
+                          onPressed: () => _showSnackBar(context, 'Add button pressed'),
+                        ),
                       ),
-                    ),
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: iconSize,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: const Color.fromARGB(255, 255, 0, 0),
-                              ),
-                            ),
-                            child: IconButton(
-                              icon: Icon(
-                                // Icons.add_circle,
-                                Icons.add_circle_outline,
-                                color: Colors.white70,
-                                size: iconSize,
-                              ),
-                              onPressed: () => _showSnackBar(context, 'Add button pressed'),
-                            ),
-                          ),
+                      Text(
+                        "Create",
+                        style: TextStyle(
+                          height: textHeight,
                         ),
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: const Color.fromARGB(255, 255, 196, 0),
-                              width: 1,
-                            ),
-                          ),
-                          child: const Text(
-                            "Create",
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color.fromARGB(255, 81, 255, 0),
-                        width: 1,
+                  Column(
+                    children: [
+                      SizedBox(
+                        height: iconSize,
+                        child: IconButton(
+                          icon: Icon(
+                            // Icons.person,
+                            Icons.person_outline,
+                            color: Colors.white70,
+                            size: iconSize,
+                          ),
+                          onPressed: () => _showSnackBar(context, 'Person button pressed'),
+                        ),
                       ),
-                    ),
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: iconSize,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: const Color.fromARGB(255, 255, 0, 0),
-                              ),
-                            ),
-                            child: IconButton(
-                              icon: Icon(
-                                // Icons.person,
-                                Icons.person_outline,
-                                color: Colors.white70,
-                                size: iconSize,
-                              ),
-                              onPressed: () => _showSnackBar(context, 'Person button pressed'),
-                            ),
-                          ),
+                      Text(
+                        "Profile",
+                        style: TextStyle(
+                          height: textHeight,
                         ),
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: const Color.fromARGB(255, 255, 196, 0),
-                              width: 1,
-                            ),
-                          ),
-                          child: const Text(
-                            "Profile",
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
