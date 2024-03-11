@@ -37,21 +37,18 @@ public class VideoProcess
         string filename = Path.GetFileNameWithoutExtension(videotuple.Item1);
         Video240p(videotuple.Item1, videotuple.Item2);
         _logger.LogInformation($"240p done for  {filename}");
-        Thread.Sleep(3000);
         Video360p(videotuple.Item1, videotuple.Item2);
+
         _logger.LogInformation($"360p done for  {filename}");
-                Thread.Sleep(3000);
+        
         Video480p(videotuple.Item1, videotuple.Item2);
         _logger.LogInformation($"480p done for  {filename}");
-                Thread.Sleep(3000);
 
         Video720p(videotuple.Item1, videotuple.Item2);
         _logger.LogInformation($"720p done for  {filename}");
-                Thread.Sleep(3000);
 
         Video1080p(videotuple.Item1, videotuple.Item2);
         _logger.LogInformation($"1080p done for  {filename}");
-                Thread.Sleep(3000);
 
         MakeIndexFile(videotuple.Item1, videotuple.Item2, filename);
 
