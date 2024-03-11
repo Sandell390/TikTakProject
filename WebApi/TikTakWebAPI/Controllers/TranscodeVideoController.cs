@@ -38,7 +38,7 @@ public class TranscodeVideoController : ControllerBase
             return "No file received";
         }
 
-        _logger.LogInformation(_env.ContentRootPath);
+        Directory.CreateDirectory(Path.Combine(_env.ContentRootPath, "Videos"));
 
         string fileId = Guid.NewGuid().ToString();
 
