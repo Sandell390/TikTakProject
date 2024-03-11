@@ -47,3 +47,10 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+tik_tak_app/linux/flutter/generated_plugin_registrant.cc
+tik_tak_app/linux/flutter/generated_plugin_registrant.h
+tik_tak_app/linux/flutter/generated_plugins.cmake
+tik_tak_app/macos/Flutter/GeneratedPluginRegistrant.swift
+tik_tak_app/windows/flutter/generated_plugin_registrant.cc
+tik_tak_app/windows/flutter/generated_plugin_registrant.h
+tik_tak_app/windows/flutter/generated_plugins.cmake
