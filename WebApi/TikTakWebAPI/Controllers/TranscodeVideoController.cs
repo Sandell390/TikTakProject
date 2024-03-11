@@ -26,7 +26,7 @@ public class TranscodeVideoController
     }
 
 
-    [HttpPut(Name = "AddVideo")]
+    [HttpPut("AddVideo")]
     public async Task<String> Put(IFormFile file)
     {
         _logger.LogInformation("Received a PUT request");
@@ -37,18 +37,18 @@ public class TranscodeVideoController
             return "No file received";
         }
 
-        var filePath = Path.Combine("Videos", file.FileName.Replace(' ', '_'));
+        string fileId = Guid.NewGuid().ToString();
 
-        _ = Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+        var filePath = Path.Combine("Videos", fileId + Path.GetExtension(file.FileName));
 
-        using (var stream = new FileStream(filePath.Replace(' ', '_'), FileMode.Create))
+        using (var stream = new FileStream(filePath, FileMode.Create))
         {
             await file.CopyToAsync(stream);
         }
 
         _logger.LogInformation("Saved the video at {FilePath}", filePath);
 
-        var outputDir = Path.Combine("Videos", Path.GetFileNameWithoutExtension(file.FileName.Replace(' ', '_')));
+        var outputDir = Path.Combine("Videos", fileId);
         _ = Directory.CreateDirectory(outputDir);
 
         _videoProcess.AddVideo(filePath,outputDir);
@@ -74,7 +74,7 @@ public class TranscodeVideoController
             return new NotFoundResult();
         }
 
-        if (!File.Exists(Path.Combine(_env.ContentRootPath, "Videos", name + ".mp4"))){
+        if (File.Exists(Path.Combine(_env.ContentRootPath, "Videos", name + ".mp4"))){
             _logger.LogWarning("Client trying to request video while it is processing");
             return new NotFoundResult();
         }
@@ -116,6 +116,35 @@ public class TranscodeVideoController
         return new PhysicalFileResult(filePath, "video/MP2T");
     }
 
+    [HttpGet("GetVideoProcessStatus/{name}")]
+    public IActionResult GetVideoProcessStatus(string name){
+        
+        var filePath = Path.Combine(_env.ContentRootPath, "Videos", name);
 
-    // GetVideoProcessStatus | The percent of the video process can be based on how many resolution there has been done
+        if (!Directory.Exists(filePath)){
+            return new BadRequestObjectResult("Video does not exists");
+        }
+
+        List<string> files = Directory.GetFiles(filePath, "*.m3u8").ToList();
+
+        for (int i = 0; i < files.Count; i++)
+        {
+            files[i] = Path.GetFileNameWithoutExtension(files[i]);
+        }
+        int percent;
+
+        foreach (var item in files){
+            _logger.LogDebug(item);
+        }
+        if (files.Contains("index")){
+            percent = 100;
+        }else{
+            percent = files.Count * 20;
+        }
+
+        return new OkObjectResult(percent);
+    }
 }
+
+// Video needs to have a unique id 
+

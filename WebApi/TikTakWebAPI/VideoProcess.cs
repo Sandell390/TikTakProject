@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using Microsoft.AspNetCore.Routing.Constraints;
 
 namespace TikTakWebAPI;
 
@@ -15,33 +16,48 @@ public class VideoProcess
     {
         _logger = logger;
 
-        Task.Run(() =>
+        Task.Run(async () =>
         {
             foreach (var videotuple in videosPaths.GetConsumingEnumerable())
             {
                 string filename = Path.GetFileNameWithoutExtension(videotuple.Item1);
                 
                 _logger.LogInformation($"Starting proccessing on {filename}");
+                _logger.LogDebug("FilePath:" + videotuple.Item1);
+                _logger.LogDebug("Output Dir:" + videotuple.Item2);
 
-                Video240p(videotuple.Item1, videotuple.Item2);
-                _logger.LogInformation($"240p done for  {filename}");
-                Video360p(videotuple.Item1, videotuple.Item2);
-                _logger.LogInformation($"360p done for  {filename}");
-                Video480p(videotuple.Item1, videotuple.Item2);
-                _logger.LogInformation($"480p done for  {filename}");
-                Video720p(videotuple.Item1, videotuple.Item2);
-                _logger.LogInformation($"720p done for  {filename}");
-                Video1080p(videotuple.Item1, videotuple.Item2);
-                _logger.LogInformation($"1080p done for  {filename}");
-                MakeIndexFile(videotuple.Item1, videotuple.Item2, filename);
+                await StartVideoProcessAsync(videotuple);
 
-
-                File.Delete(videotuple.Item1);
-                
-                _logger.LogInformation("Commands executed");
-
+                _logger.LogInformation($"Done processing on {filename}");
             }
         });
+    }
+
+    private Task StartVideoProcessAsync((string, string) videotuple){
+        string filename = Path.GetFileNameWithoutExtension(videotuple.Item1);
+        Video240p(videotuple.Item1, videotuple.Item2);
+        _logger.LogInformation($"240p done for  {filename}");
+        Thread.Sleep(3000);
+        Video360p(videotuple.Item1, videotuple.Item2);
+        _logger.LogInformation($"360p done for  {filename}");
+                Thread.Sleep(3000);
+        Video480p(videotuple.Item1, videotuple.Item2);
+        _logger.LogInformation($"480p done for  {filename}");
+                Thread.Sleep(3000);
+
+        Video720p(videotuple.Item1, videotuple.Item2);
+        _logger.LogInformation($"720p done for  {filename}");
+                Thread.Sleep(3000);
+
+        Video1080p(videotuple.Item1, videotuple.Item2);
+        _logger.LogInformation($"1080p done for  {filename}");
+                Thread.Sleep(3000);
+
+        MakeIndexFile(videotuple.Item1, videotuple.Item2, filename);
+
+
+        File.Delete(videotuple.Item1);
+        return Task.CompletedTask;
     }
 
     public void AddVideo(string filepath, string outputDir)
@@ -52,7 +68,7 @@ public class VideoProcess
     private void Video240p(string filepath, string outputDir)
     {
 
-        string command = $"ffmpeg -hwaccel cuda -hwaccel_output_format cuda -i \"{filepath}\" " +
+        string command = $"ffmpeg -hwaccel cuda -i \"{filepath}\" " +
         "-vf scale=w=240:h=426:force_original_aspect_ratio=decrease,pad=240:426:(ow-iw)/2:(oh-ih)/2 -c:a aac " +
         "-ar 48000 -c:v h264_nvenc -profile:v main -crf 20 -sc_threshold 0 -g 48 " +
         "-keyint_min 48 -hls_time 2 -hls_playlist_type vod -b:v 240k " +
@@ -64,7 +80,7 @@ public class VideoProcess
 
     private void Video360p(string filepath, string outputDir)
     {
-        string command = $"ffmpeg -hwaccel cuda -hwaccel_output_format cuda -i \"{filepath}\" " +
+        string command = $"ffmpeg -hwaccel cuda -i \"{filepath}\" " +
         "-vf scale=w=360:h=640:force_original_aspect_ratio=decrease,pad=360:640:(ow-iw)/2:(oh-ih)/2 -c:a aac " +
         "-ar 48000 -c:v h264_nvenc -profile:v main -crf 20 -sc_threshold 0 -g 48 " +
         "-keyint_min 48 -hls_time 2 -hls_playlist_type vod -b:v 800k " +
@@ -76,7 +92,7 @@ public class VideoProcess
     private void Video480p(string filepath, string outputDir)
     {
 
-        string command = $"ffmpeg -hwaccel cuda -hwaccel_output_format cuda -i \"{filepath}\" " +
+        string command = $"ffmpeg -hwaccel cuda -i \"{filepath}\" " +
         "-vf scale=w=480:h=842:force_original_aspect_ratio=decrease,pad=480:842:(ow-iw)/2:(oh-ih)/2 -c:a aac " +
         "-ar 48000 -c:v h264_nvenc -profile:v main -crf 20 -sc_threshold 0 -g 48 " +
         "-keyint_min 48 -hls_time 2 -hls_playlist_type vod -b:v 1400k " +
@@ -88,7 +104,7 @@ public class VideoProcess
     private void Video720p(string filepath, string outputDir)
     {
 
-        string command = $"ffmpeg -hwaccel cuda -hwaccel_output_format cuda -i \"{filepath}\" " +
+        string command = $"ffmpeg -hwaccel cuda -i \"{filepath}\" " +
         "-vf scale=w=720:h=1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2 -c:a aac " +
         "-ar 48000 -c:v h264_nvenc -profile:v main -crf 20 -sc_threshold 0 -g 48 " +
         "-keyint_min 48 -hls_time 2 -hls_playlist_type vod -b:v 2800k " +
@@ -100,7 +116,7 @@ public class VideoProcess
     private void Video1080p(string filepath, string outputDir)
     {
 
-        string command = $"ffmpeg -hwaccel cuda -hwaccel_output_format cuda -i \"{filepath}\" " +
+        string command = $"ffmpeg -hwaccel cuda -i \"{filepath}\" " +
         "-vf scale=w=1080:h=1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2 -c:a aac " +
         "-ar 48000 -c:v h264_nvenc -profile:v main -crf 20 -sc_threshold 0 -g 48 " +
         "-keyint_min 48 -hls_time 2 -hls_playlist_type vod -b:v 5000k " +
