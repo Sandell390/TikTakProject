@@ -79,8 +79,7 @@ public class TranscodeVideoController
             return new NotFoundResult();
         }
 
-        _logger.LogInformation("Returning file: {FilePath}", filePath);
-
+        _logger.LogInformation($"Returning file: {filePath}");
 
         return new PhysicalFileResult(filePath, "application/vnd.apple.mpegurl");
     }

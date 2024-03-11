@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using TikTakWebAPI.Models;
 
 namespace TikTakWebAPI.Controllers;
 
+[ApiController]
+[Route("[controller]")]
 public class UserController{
 
 
@@ -13,15 +16,29 @@ public class UserController{
 
     // Create User
     [HttpPut()]
-    public void AddUser(){
+    public IActionResult AddUser(){
         
+        return new OkResult();
     }
 
     // Delete User
+    [HttpDelete()]
+    public IActionResult DeleteUser(){
+
+        return new OkResult();
+    }
 
     // Get User
+    [HttpGet("GetUserByUsername")]
+    public User GetUserByUsername(string username){
+        return null;
+    }
 
     // Get User's videos
+    [HttpGet("GetAllUserVideos")]
+    public List<Video> GetAllVideoFromUser(string username){
+        return null;
+    }
 
     // 
 }

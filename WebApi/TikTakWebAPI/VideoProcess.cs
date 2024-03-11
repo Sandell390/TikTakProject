@@ -70,7 +70,7 @@ public class VideoProcess
 
         string command = $"ffmpeg -hwaccel cuda -i \"{filepath}\" " +
         "-vf scale=w=240:h=426:force_original_aspect_ratio=decrease,pad=240:426:(ow-iw)/2:(oh-ih)/2 -c:a aac " +
-        "-ar 48000 -c:v h264 -profile:v main -crf 20 -sc_threshold 0 -g 48 " +
+        "-ar 48000 -c:v h264_nvenc -profile:v main -crf 20 -sc_threshold 0 -g 48 " +
         "-keyint_min 48 -hls_time 2 -hls_playlist_type vod -b:v 240k " +
         "-maxrate 240k -bufsize 480k -b:a 64k -hls_segment_filename " + outputDir + "/240p_%d.ts " + outputDir + "/240p.m3u8";
 
@@ -82,7 +82,7 @@ public class VideoProcess
     {
         string command = $"ffmpeg -hwaccel cuda -i \"{filepath}\" " +
         "-vf scale=w=360:h=640:force_original_aspect_ratio=decrease,pad=360:640:(ow-iw)/2:(oh-ih)/2 -c:a aac " +
-        "-ar 48000 -c:v h264 -profile:v main -crf 20 -sc_threshold 0 -g 48 " +
+        "-ar 48000 -c:v h264_nvenc -profile:v main -crf 20 -sc_threshold 0 -g 48 " +
         "-keyint_min 48 -hls_time 2 -hls_playlist_type vod -b:v 800k " +
         "-maxrate 856k -bufsize 1200k -b:a 96k -hls_segment_filename " + outputDir + "/360p_%d.ts " + outputDir + "/360p.m3u8";
 
@@ -94,7 +94,7 @@ public class VideoProcess
 
         string command = $"ffmpeg -hwaccel cuda -i \"{filepath}\" " +
         "-vf scale=w=480:h=842:force_original_aspect_ratio=decrease,pad=480:842:(ow-iw)/2:(oh-ih)/2 -c:a aac " +
-        "-ar 48000 -c:v h264 -profile:v main -crf 20 -sc_threshold 0 -g 48 " +
+        "-ar 48000 -c:v h264_nvenc -profile:v main -crf 20 -sc_threshold 0 -g 48 " +
         "-keyint_min 48 -hls_time 2 -hls_playlist_type vod -b:v 1400k " +
         "-maxrate 1498k -bufsize 2100k -b:a 128k -hls_segment_filename " + outputDir + "/480p_%d.ts " + outputDir + "/480p.m3u8";
 
@@ -106,7 +106,7 @@ public class VideoProcess
 
         string command = $"ffmpeg -hwaccel cuda -i \"{filepath}\" " +
         "-vf scale=w=720:h=1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2 -c:a aac " +
-        "-ar 48000 -c:v h264 -profile:v main -crf 20 -sc_threshold 0 -g 48 " +
+        "-ar 48000 -c:v h264_nvenc -profile:v main -crf 20 -sc_threshold 0 -g 48 " +
         "-keyint_min 48 -hls_time 2 -hls_playlist_type vod -b:v 2800k " +
         "-maxrate 2996k -bufsize 4200k -b:a 128k -hls_segment_filename " + outputDir + "/720p_%d.ts " + outputDir + "/720p.m3u8";
 
@@ -118,7 +118,7 @@ public class VideoProcess
 
         string command = $"ffmpeg -hwaccel cuda -i \"{filepath}\" " +
         "-vf scale=w=1080:h=1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2 -c:a aac " +
-        "-ar 48000 -c:v h264 -profile:v main -crf 20 -sc_threshold 0 -g 48 " +
+        "-ar 48000 -c:v h264_nvenc -profile:v main -crf 20 -sc_threshold 0 -g 48 " +
         "-keyint_min 48 -hls_time 2 -hls_playlist_type vod -b:v 5000k " +
         "-maxrate 5350k -bufsize 7500k -b:a 192k -hls_segment_filename " + outputDir + "/1080p_%d.ts " + outputDir + "/1080p.m3u8";
 
