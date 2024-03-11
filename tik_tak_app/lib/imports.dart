@@ -1,6 +1,7 @@
 /* EXTERNAL IMPORTS */
 export 'package:flutter/material.dart';
 export 'package:video_player/video_player.dart';
+export 'package:flutter/services.dart';
 
 /* INTERNAL IMPORTS */
 export 'models/models.dart';

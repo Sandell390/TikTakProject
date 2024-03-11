@@ -5,7 +5,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Start the app
-  runApp(const TikTakApp());
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((value) => runApp(const TikTakApp()));
 }
 
 class TikTakApp extends StatelessWidget {
