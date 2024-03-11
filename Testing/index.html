@@ -8,13 +8,14 @@
     <div id="videos"></div>
 
     <script>
-        fetch('http://10.108.146.16:5050/TranscodeVideo/GetVideoList')
+        fetch('http://localhost:5050/TranscodeVideo/GetVideoList')
             .then(response => response.json())
             .then(videos => {
                 var videosDiv = document.getElementById('videos');
                 videos.forEach(video => {
                     var videoElement = document.createElement('video');
                     videoElement.id = video;
+                    videoElement.setAttribute("width", "100%")
                     videosDiv.appendChild(videoElement);
 
                     var playButton = document.createElement('button');
@@ -29,14 +30,14 @@
         function playVideo(video, videoElement) {
             if(Hls.isSupported()) {
                 var hls = new Hls();
-                hls.loadSource('http://10.108.146.16:5050/TranscodeVideo/stream/' + video);
+                hls.loadSource('http://localhost:5050/TranscodeVideo/stream/' + video);
                 hls.attachMedia(videoElement);
                 hls.on(Hls.Events.MANIFEST_PARSED, function() {
                     videoElement.play();
                 });
             }
             else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
-                videoElement.src = 'http://10.108.146.16:5050/TranscodeVideo/stream/' + video;
+                videoElement.src = 'http://localhost:5050/TranscodeVideo/stream/' + video;
                 videoElement.addEventListener('loadedmetadata', function() {
                     videoElement.play();
                 });
