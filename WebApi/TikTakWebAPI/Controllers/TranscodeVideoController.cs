@@ -1,16 +1,17 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿
 
 namespace TikTakWebAPI.Controllers;
 
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 
 
 [ApiController]
 [Route("[controller]")]
-public class TranscodeVideoController
+public class TranscodeVideoController : ControllerBase
 {
 
     private readonly ILogger<TranscodeVideoController> _logger;
@@ -37,6 +38,8 @@ public class TranscodeVideoController
             return "No file received";
         }
 
+        _logger.LogInformation(_env.ContentRootPath);
+
         string fileId = Guid.NewGuid().ToString();
 
         var filePath = Path.Combine("Videos", fileId + Path.GetExtension(file.FileName));
@@ -57,7 +60,7 @@ public class TranscodeVideoController
     }
 
     [HttpGet("stream/{name}")]
-    public IActionResult GetHlsPlaylist(string name)
+    public async Task<IActionResult>  GetHlsPlaylist(string name)
     {
         if (name.EndsWith(".ts"))
         {
@@ -74,14 +77,14 @@ public class TranscodeVideoController
             return new NotFoundResult();
         }
 
-        if (File.Exists(Path.Combine(_env.ContentRootPath, "Videos", name + ".mp4"))){
+        if (System.IO.File.Exists(Path.Combine(_env.ContentRootPath, "Videos", name + ".mp4"))){
             _logger.LogWarning("Client trying to request video while it is processing");
             return new NotFoundResult();
         }
 
         _logger.LogInformation($"Returning file: {filePath}");
 
-        return new PhysicalFileResult(filePath, "application/vnd.apple.mpegurl");
+        return File(System.IO.File.OpenRead(filePath), "application/octet-stream", Path.GetFileName(filePath));  
     }
 
     [HttpGet("GetVideoList")]
@@ -90,7 +93,7 @@ public class TranscodeVideoController
         var videoFolderPath = Path.Combine(_env.ContentRootPath, "Videos");
         var directories = Directory.GetDirectories(videoFolderPath);
         var videoNames = directories.Select(Path.GetFileName).ToList();
-        videoNames = videoNames.Where(x => !File.Exists(Path.Combine(_env.ContentRootPath, "Videos", x + ".mp4"))).ToList();
+        videoNames = videoNames.Where(x => !System.IO.File.Exists(Path.Combine(_env.ContentRootPath, "Videos", x + ".mp4"))).ToList();
         return videoNames;
     }
 
