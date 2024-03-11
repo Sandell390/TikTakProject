@@ -4,7 +4,7 @@ project(tik_tak_app LANGUAGES CXX)
 
 # The name of the executable created for the application. Change this to change
 # the on-disk name of your application.
-set(BINARY_NAME "tik_tak_app")
+set(BINARY_NAME "TikTak")
 
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
 # versions of CMake.
