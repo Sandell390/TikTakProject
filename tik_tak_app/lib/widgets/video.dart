@@ -3,7 +3,7 @@ import '/imports.dart';
 class VideoWidget extends StatefulWidget {
   final List<Uri> videoUrls;
 
-  const VideoWidget({Key? key, required this.videoUrls}) : super(key: key);
+  const VideoWidget({super.key, required this.videoUrls});
 
   @override
   VideoWidgetState createState() => VideoWidgetState();
@@ -62,10 +62,19 @@ class VideoWidgetState extends State<VideoWidget> {
     });
   }
 
+  void _likeVideo() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(_controllers[_currentVideoIndex].dataSource),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: _togglePlay,
+      onDoubleTap: _likeVideo,
       child: PageView.builder(
         controller: PageController(),
         scrollDirection: Axis.vertical,

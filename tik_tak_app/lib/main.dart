@@ -5,7 +5,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Start the app
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((value) => runApp(const TikTakApp()));
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((_) => runApp(const TikTakApp()));
 }
 
 class TikTakApp extends StatelessWidget {
@@ -18,7 +18,7 @@ class TikTakApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
             seedColor: Colors.deepPurple,
-            // Color theme is based on OS DarkMode
+            // Brightness is based on OS DarkMode
             // Meaning it follows the UI of the device
             brightness: MediaQuery.of(context).platformBrightness),
         useMaterial3: true,
