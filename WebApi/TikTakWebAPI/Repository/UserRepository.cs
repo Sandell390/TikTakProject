@@ -25,7 +25,8 @@ public class UserRepository(DatabaseManager databaseManager) : IUserRepository
     public User GetUserByUsername(string username)
     {
         string sql = "SELECT * FROM User WHERE username = @username";
-        User user = _databaseManager.Query(sql, reader => new User());
+        //User user = _databaseManager.Query(sql, reader => new User());
+        return null;
     }
 
     public bool UpdateUser(User user)
