@@ -1,22 +1,15 @@
-﻿
+﻿namespace TikTakWebAPI.Controllers;
 
-namespace TikTakWebAPI.Controllers;
-
-using System.Diagnostics;
-using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http.HttpResults;
-
-
+using Models;
+using System.Text.Json;
 
 [ApiController]
 [Route("[controller]")]
 public class TranscodeVideoController : ControllerBase
 {
-
     private readonly ILogger<TranscodeVideoController> _logger;
     private readonly IWebHostEnvironment _env;
-
     private readonly VideoProcess _videoProcess;
 
     public TranscodeVideoController(ILogger<TranscodeVideoController> logger, IWebHostEnvironment env, VideoProcess videoProcess)
@@ -26,37 +19,36 @@ public class TranscodeVideoController : ControllerBase
         _env = env;
     }
 
-
     [HttpPost("AddVideo")]
-    public async Task<IActionResult> Post(IFormFile file)
+    public async Task<string> Put(IFormFile file)
     {
         _logger.LogInformation("Received a Post request");
 
         if (file == null || file.Length == 0)
         {
             _logger.LogWarning("No file received");
-            return new OkObjectResult("No file received");
+            return "No file received";
         }
 
         Directory.CreateDirectory(Path.Combine(_env.ContentRootPath, "Videos"));
 
         string fileId = Guid.NewGuid().ToString();
 
-        var filePath = Path.Combine("Videos", fileId + Path.GetExtension(file.FileName));
+        string filePath = Path.Combine("Videos", fileId + Path.GetExtension(file.FileName));
 
-        using (var stream = new FileStream(filePath, FileMode.Create))
+        using (FileStream stream = new FileStream(filePath, FileMode.Create))
         {
             await file.CopyToAsync(stream);
         }
 
         _logger.LogInformation("Saved the video at {FilePath}", filePath);
 
-        var outputDir = Path.Combine("Videos", fileId);
+        string outputDir = Path.Combine("Videos", fileId);
         _ = Directory.CreateDirectory(outputDir);
 
-        _videoProcess.AddVideo(filePath,outputDir);
+        _videoProcess.AddVideo(filePath, outputDir);
 
-        return new OkObjectResult("File received, the server is proccessing the video");
+        return "File received, the server is proccessing the video";
     }
 
     [HttpGet("stream/{name}/thumbnail")]
@@ -72,7 +64,7 @@ public class TranscodeVideoController : ControllerBase
 
 
     [HttpGet("stream/{name}")]
-    public IActionResult  GetHlsPlaylist(string name)
+    public IActionResult GetHlsPlaylist(string name)
     {
         if (name.EndsWith(".ts"))
         {
@@ -89,24 +81,29 @@ public class TranscodeVideoController : ControllerBase
             return new NotFoundResult();
         }
 
-        if (System.IO.File.Exists(Path.Combine(_env.ContentRootPath, "Videos", name + ".mp4"))){
+        if (System.IO.File.Exists(Path.Combine(_env.ContentRootPath, "Videos", name + ".mp4")))
+        {
             _logger.LogWarning("Client trying to request video while it is processing");
             return new NotFoundResult();
         }
 
         _logger.LogInformation($"Returning file: {filePath}");
 
-        return File(System.IO.File.OpenRead(filePath), "application/octet-stream", Path.GetFileName(filePath));  
+        return File(System.IO.File.OpenRead(filePath), "application/octet-stream", Path.GetFileName(filePath));
     }
 
     [HttpGet("GetVideoList")]
-    public List<string?> GetVideoList()
+    public string GetVideoList()
     {
-        var videoFolderPath = Path.Combine(_env.ContentRootPath, "Videos");
-        var directories = Directory.GetDirectories(videoFolderPath);
-        var videoNames = directories.Select(Path.GetFileName).ToList();
+        string videoFolderPath = Path.Combine(_env.ContentRootPath, "Videos");
+        string[] directories = Directory.GetDirectories(videoFolderPath);
+        List<string?> videoNames = directories.Select(Path.GetFileName).ToList();
+
         videoNames = videoNames.Where(x => !System.IO.File.Exists(Path.Combine(_env.ContentRootPath, "Videos", x + ".mp4"))).ToList();
-        return videoNames;
+
+        List<VideoModel> videoModels = (from string videoName in videoNames select new VideoModel(videoName, "Videos")).ToList();
+
+        return JsonSerializer.Serialize(videoModels);
     }
 
     [HttpGet("stream/{name}/{segment}")]
@@ -131,11 +128,13 @@ public class TranscodeVideoController : ControllerBase
     }
 
     [HttpGet("GetVideoProcessStatus/{name}")]
-    public IActionResult GetVideoProcessStatus(string name){
-        
+    public IActionResult GetVideoProcessStatus(string name)
+    {
+
         var filePath = Path.Combine(_env.ContentRootPath, "Videos", name);
 
-        if (!Directory.Exists(filePath)){
+        if (!Directory.Exists(filePath))
+        {
             return new BadRequestObjectResult("Video does not exists");
         }
 
@@ -147,18 +146,19 @@ public class TranscodeVideoController : ControllerBase
         }
         int percent;
 
-        foreach (var item in files){
+        foreach (var item in files)
+        {
             _logger.LogDebug(item);
         }
-        if (files.Contains("index")){
+        if (files.Contains("index"))
+        {
             percent = 100;
-        }else{
+        }
+        else
+        {
             percent = files.Count * 20;
         }
 
         return new OkObjectResult(percent);
     }
 }
-
-// Video needs to have a unique id 
-
