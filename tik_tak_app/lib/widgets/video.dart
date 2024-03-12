@@ -3,7 +3,7 @@ import '/imports.dart'; // Import necessary packages and dependencies
 class VideoWidget extends StatefulWidget {
   final List<Uri> videoUrls; // List of video URLs
 
-  const VideoWidget({Key? key, required this.videoUrls}) : super(key: key);
+  const VideoWidget({super.key, required this.videoUrls});
 
   @override
   VideoWidgetState createState() => VideoWidgetState();
