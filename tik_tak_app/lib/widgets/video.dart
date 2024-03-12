@@ -15,13 +15,20 @@ class VideoWidgetState extends State<VideoWidget> {
   late int _currentVideoIndex; // Index of the currently displayed video
   late bool _isPlaying; // Flag to track if video is currently playing
   double _sliderValue = 0.0; // Value of the slider for video seek position
+  String _currentVideoPosition = '00:00 / 00:00';
 
   @override
   void initState() {
     super.initState();
 
     // Initialize video player controllers for each video URL
-    _controllers = widget.videoUrls.map((url) => VideoPlayerController.networkUrl(url)).toList();
+    _controllers = widget.videoUrls
+        .map(
+          (url) => VideoPlayerController.networkUrl(
+            url,
+          ),
+        )
+        .toList();
 
     // Initialize future list for initializing video player controllers
     _initializeVideoPlayerFutures = List<Future<void>>.generate(
@@ -60,14 +67,27 @@ class VideoWidgetState extends State<VideoWidget> {
 
   // Toggle play/pause state of the video
   void _togglePlay() {
+    final Duration currentPosition = _controllers[_currentVideoIndex].value.position;
+    final Duration duration = _controllers[_currentVideoIndex].value.duration;
+
+    // Calculate currentPositionInVideo in "mm:ss" format
+    String getFormattedTime(Duration duration) {
+      String minutes = (duration.inMinutes % 60).toString().padLeft(2, '0');
+      String seconds = (duration.inSeconds % 60).toString().padLeft(2, '0');
+      return "$minutes:$seconds";
+    }
+
+    // Format currentPositionInVideo and videoDuration
+    String currentPositionInVideo = getFormattedTime(currentPosition);
+    String videoDuration = getFormattedTime(duration);
+
     setState(() {
       if (_isPlaying) {
         _controllers[_currentVideoIndex].pause();
 
-        final Duration currentPosition = _controllers[_currentVideoIndex].value.position;
-        final Duration duration = _controllers[_currentVideoIndex].value.duration;
-
         _sliderValue = currentPosition.inMilliseconds.toDouble() / duration.inMilliseconds.toDouble();
+
+        _currentVideoPosition = '$currentPositionInVideo / $videoDuration';
       } else {
         _controllers[_currentVideoIndex].play();
       }
@@ -78,8 +98,27 @@ class VideoWidgetState extends State<VideoWidget> {
 
   // Callback function when slider value changes
   void _onSliderChanged(double value) {
+    final Duration duration = _controllers[_currentVideoIndex].value.duration;
+
+    // Calculate currentPositionInVideo in "mm:ss" format
+    String getFormattedTime(Duration duration) {
+      String minutes = (duration.inMinutes % 60).toString().padLeft(2, '0');
+      String seconds = (duration.inSeconds % 60).toString().padLeft(2, '0');
+      return "$minutes:$seconds";
+    }
+
+    // Format videoDuration
+    String videoDuration = getFormattedTime(duration);
+
+    // Calculate the slider value in "mm:ss" format
+    double sliderValueInMs = _sliderValue * duration.inMilliseconds;
+    Duration sliderValueDuration = Duration(milliseconds: sliderValueInMs.round());
+
+    String sliderPosition = getFormattedTime(sliderValueDuration);
+
     setState(() {
       _sliderValue = value;
+      _currentVideoPosition = '$sliderPosition / $videoDuration';
     });
   }
 
@@ -125,6 +164,7 @@ class VideoWidgetState extends State<VideoWidget> {
                   alignment: Alignment.center,
                   children: [
                     VideoPlayer(_controllers[index]), // Display the video player
+
                     if (!_isPlaying && _currentVideoIndex == index)
                       const Icon(Icons.play_arrow,
                           size: 72.0, color: Colors.white), // Show play icon if video is paused
@@ -132,27 +172,40 @@ class VideoWidgetState extends State<VideoWidget> {
                 ),
               ),
               if (!_isPlaying && _currentVideoIndex == index)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-                  child: SliderTheme(
-                    data: SliderThemeData(
-                      overlayShape: SliderComponentShape.noOverlay,
-                      overlayColor: Colors.transparent, // Set overlay color to transparent to remove background
-                      trackShape: const RoundedRectSliderTrackShape(),
-                      inactiveTrackColor: Colors.grey[500], // Set the color of the track
-                      activeTrackColor: Colors.grey[800], // Set the color for the active part of the track
-                      thumbShape: const RoundSliderThumbShape(
-                        enabledThumbRadius: 6.9, // Adjust the size of the thumb as needed
+                Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                      child: Text(_currentVideoPosition),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                      // child: VideoProgressIndicator(
+                      //   _controllers[index],
+                      //   allowScrubbing: true,
+                      //   padding: const EdgeInsets.all(0),
+                      // ),
+                      child: SliderTheme(
+                        data: SliderThemeData(
+                          overlayShape: SliderComponentShape.noOverlay,
+                          overlayColor: Colors.transparent, // Set overlay color to transparent to remove background
+                          trackShape: const RoundedRectSliderTrackShape(),
+                          inactiveTrackColor: Colors.grey[500], // Set the color of the track
+                          activeTrackColor: Colors.grey[800], // Set the color for the active part of the track
+                          thumbShape: const RoundSliderThumbShape(
+                            enabledThumbRadius: 6.9, // Adjust the size of the thumb as needed
+                          ),
+                          thumbColor: Colors.grey[700], // Set the color for the slider thumb
+                          trackHeight: 4,
+                        ),
+                        child: Slider(
+                          value: _sliderValue,
+                          onChanged: _onSliderChanged,
+                          onChangeEnd: _onSliderChangeEnd,
+                        ),
                       ),
-                      thumbColor: Colors.grey[700], // Set the color for the slider thumb
-                      trackHeight: 4,
                     ),
-                    child: Slider(
-                      value: _sliderValue,
-                      onChanged: _onSliderChanged,
-                      onChangeEnd: _onSliderChangeEnd,
-                    ),
-                  ),
+                  ],
                 ),
             ],
           );

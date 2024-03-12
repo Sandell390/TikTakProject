@@ -19,8 +19,8 @@ class HomePage extends StatelessWidget {
           children: <Widget>[
             Container(
               height: mediaQueryHeight - appBarBottomHeight,
-              color: const Color.fromARGB(255, 190, 190, 190), // Placeholder for video
-              child: Center(
+              color: const Color.fromARGB(255, 0, 0, 0), // Placeholder for video
+              child: const Center(
                 child: VideoScreen(),
               ),
             ),
@@ -43,7 +43,10 @@ class HomePage extends StatelessWidget {
                             color: Colors.white70,
                             size: iconSize,
                           ),
-                          onPressed: () => _showSnackBar(context, 'Home button pressed'),
+                          onPressed: () async => {
+                            _showSnackBar(context, 'Home button pressed'),
+                          },
+                          // onPressed: () => _showSnackBar(context, 'Home button pressed'),
                         ),
                       ),
                       Text(
