@@ -14,6 +14,7 @@ class VideoWidgetState extends State<VideoWidget> {
   late List<Future<void>> _initializeVideoPlayerFutures;
   late int _currentVideoIndex;
   late bool _isPlaying;
+  double _sliderValue = 0.0;
 
   @override
   void initState() {
@@ -55,11 +56,37 @@ class VideoWidgetState extends State<VideoWidget> {
     setState(() {
       if (_isPlaying) {
         _controllers[_currentVideoIndex].pause();
+
+        final Duration currentPosition = _controllers[_currentVideoIndex].value.position;
+        final Duration duration = _controllers[_currentVideoIndex].value.duration;
+
+        _sliderValue = currentPosition.inMilliseconds.toDouble() / duration.inMilliseconds.toDouble();
       } else {
         _controllers[_currentVideoIndex].play();
       }
+
       _isPlaying = !_isPlaying;
     });
+  }
+
+  void _onSliderChanged(double value) {
+    setState(() {
+      _sliderValue = value;
+    });
+  }
+
+  // Resume playing the video when the user finishes dragging the slider
+  void _onSliderChangeEnd(double value) {
+    setState(() {
+      _sliderValue = value;
+    });
+
+    final Duration duration = _controllers[_currentVideoIndex].value.duration;
+
+    _controllers[_currentVideoIndex].seekTo(Duration(milliseconds: (_sliderValue * duration.inMilliseconds).round()));
+
+    _controllers[_currentVideoIndex].play();
+    _isPlaying = true;
   }
 
   void _likeVideo() {
@@ -80,12 +107,41 @@ class VideoWidgetState extends State<VideoWidget> {
         scrollDirection: Axis.vertical,
         itemCount: widget.videoUrls.length,
         itemBuilder: (context, index) {
-          return Stack(
-            alignment: Alignment.center,
+          return Column(
             children: [
-              VideoPlayer(_controllers[index]),
+              Expanded(
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    VideoPlayer(_controllers[index]),
+                    if (!_isPlaying && _currentVideoIndex == index)
+                      const Icon(Icons.play_arrow, size: 72.0, color: Colors.white),
+                  ],
+                ),
+              ),
               if (!_isPlaying && _currentVideoIndex == index)
-                const Icon(Icons.play_arrow, size: 72.0, color: Colors.white),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                  child: SliderTheme(
+                    data: SliderThemeData(
+                      overlayShape: SliderComponentShape.noOverlay,
+                      overlayColor: Colors.transparent, // Set overlay color to transparent to remove background
+                      trackShape: const RoundedRectSliderTrackShape(),
+                      inactiveTrackColor: Colors.grey[500], // Set the color of the track
+                      activeTrackColor: Colors.grey[800], // Set the color for the active part of the track
+                      thumbShape: const RoundSliderThumbShape(
+                        enabledThumbRadius: 6.9, // Adjust the size of the thumb as needed
+                      ),
+                      thumbColor: Colors.grey[700], // Set the color for the slider thumb
+                      trackHeight: 4,
+                    ),
+                    child: Slider(
+                      value: _sliderValue,
+                      onChanged: _onSliderChanged,
+                      onChangeEnd: _onSliderChangeEnd,
+                    ),
+                  ),
+                ),
             ],
           );
         },
@@ -95,6 +151,7 @@ class VideoWidgetState extends State<VideoWidget> {
           setState(() {
             _currentVideoIndex = index; // Update current video index
             _isPlaying = true; // Reset play state
+            _sliderValue = 0.0; // Reset slider value
           });
 
           _controllers[_currentVideoIndex].play(); // Play new video
