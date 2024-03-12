@@ -50,6 +50,8 @@ public class VideoProcess
         Video1080p(videotuple.Item1, videotuple.Item2);
         _logger.LogInformation($"1080p done for  {filename}");
 
+        MakeThumbnail(videotuple.Item1, videotuple.Item2);
+
         MakeIndexFile(videotuple.Item1, videotuple.Item2, filename);
 
 
@@ -60,6 +62,12 @@ public class VideoProcess
     public void AddVideo(string filepath, string outputDir)
     {
         videosPaths.Add((filepath, outputDir));
+    }
+
+    private void MakeThumbnail(string filepath, string outputDir){
+        string command = $"ffmpeg -i \"{filepath}\" -frames:v 1 {outputDir}/thumbnail.png";
+
+        RunCommand(command);
     }
 
     private void Video240p(string filepath, string outputDir)

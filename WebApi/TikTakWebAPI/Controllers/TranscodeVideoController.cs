@@ -27,15 +27,15 @@ public class TranscodeVideoController : ControllerBase
     }
 
 
-    [HttpPut("AddVideo")]
-    public async Task<String> Put(IFormFile file)
+    [HttpPost("AddVideo")]
+    public async Task<IActionResult> Post(IFormFile file)
     {
-        _logger.LogInformation("Received a PUT request");
+        _logger.LogInformation("Received a Post request");
 
         if (file == null || file.Length == 0)
         {
             _logger.LogWarning("No file received");
-            return "No file received";
+            return new OkObjectResult("No file received");
         }
 
         Directory.CreateDirectory(Path.Combine(_env.ContentRootPath, "Videos"));
@@ -56,11 +56,23 @@ public class TranscodeVideoController : ControllerBase
 
         _videoProcess.AddVideo(filePath,outputDir);
 
-        return "File received, the server is proccessing the video";
+        return new OkObjectResult("File received, the server is proccessing the video");
     }
 
+    [HttpGet("stream/{name}/thumbnail")]
+    public IActionResult GetVideoThumbnail(string name){
+        _logger.LogInformation($"Thumbnail requested from: {name}");
+        string filePath = Path.Combine(_env.ContentRootPath, "Videos", name, "thumbnail.png");
+
+        if (!System.IO.File.Exists(filePath))
+            return new NotFoundResult();
+
+        return File(System.IO.File.OpenRead(filePath), "application/octet-stream", Path.GetFileName(filePath));  
+    }
+
+
     [HttpGet("stream/{name}")]
-    public async Task<IActionResult>  GetHlsPlaylist(string name)
+    public IActionResult  GetHlsPlaylist(string name)
     {
         if (name.EndsWith(".ts"))
         {
