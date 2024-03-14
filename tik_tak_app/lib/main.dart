@@ -15,7 +15,7 @@ class TikTakApp extends StatelessWidget {
   Widget build(BuildContext context) => MultiProvider(
         providers: [
           ChangeNotifierProvider(
-            create: (context) => VideoProvider(),
+            create: (context) => VideoApiProvider(),
           ),
         ],
         child: MaterialApp(

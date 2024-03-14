@@ -1,4 +1,15 @@
-import '/imports.dart'; // Import necessary packages and dependencies
+import '/imports.dart';
+
+class VideoWidgetStl extends StatelessWidget {
+  final List<Uri> videoUrls; // List of video URLs
+
+  const VideoWidgetStl({super.key, required this.videoUrls});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
 
 class VideoWidget extends StatefulWidget {
   final List<Uri> videoUrls; // List of video URLs
@@ -180,11 +191,6 @@ class VideoWidgetState extends State<VideoWidget> {
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-                      // child: VideoProgressIndicator(
-                      //   _controllers[index],
-                      //   allowScrubbing: true,
-                      //   padding: const EdgeInsets.all(0),
-                      // ),
                       child: SliderTheme(
                         data: SliderThemeData(
                           overlayShape: SliderComponentShape.noOverlay,

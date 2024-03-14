@@ -1,11 +1,11 @@
 import '/imports.dart';
 
-class VideoScreen extends StatelessWidget {
-  const VideoScreen({super.key});
+class VideoPage extends StatelessWidget {
+  const VideoPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    VideoProvider videoListProvider = context.watch<VideoProvider>();
+    VideoApiProvider videoListProvider = context.watch<VideoApiProvider>();
     videoListProvider.getVideoListAsync();
 
     List<Uri> videoUrls = videoListProvider.videoModels
