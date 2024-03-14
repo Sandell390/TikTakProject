@@ -3,33 +3,56 @@ using System.Data;
 using Npgsql;
 
 
-public class DatabaseManager{
+public class DatabaseManager
+{
 
-    static string _connString = "Host=ep-tight-sun-a2xbcubr-pooler.eu-central-1.aws.neon.tech;Username=Jesper;Password=r16yjxbBFDpC;Database=tiktak";
-    NpgsqlConnection db;
+    static readonly string _connString = "Host=ep-tight-sun-a2xbcubr-pooler.eu-central-1.aws.neon.tech;Username=Jesper;Password=r16yjxbBFDpC;Database=tiktak";
+    private readonly NpgsqlConnection db;
 
-    public DatabaseManager(){
+    private readonly ILogger _logger;
+
+    public DatabaseManager(ILogger logger)
+    {
         db = new NpgsqlConnection(_connString);
+        _logger = logger;
     }
 
-    public IEnumerable<T> Query<T>(string sql, Func<IDataReader, T> map)
+    public IEnumerable<T>? Query<T>(string sql, Func<IDataReader, T> map, out bool success, Dictionary<string, string> parameters = null)
     {
+        success = false;
         var results = new List<T>();
-        using (var connection = new NpgsqlConnection(_connString))
+        try
         {
-            connection.Open();
-            using (var command = new NpgsqlCommand(sql, connection))
+            using (var connection = new NpgsqlConnection(_connString))
             {
-                using (var reader = command.ExecuteReader())
+                connection.Open();
+                using (var command = new NpgsqlCommand(sql, connection))
                 {
-                    while (reader.Read())
+                    foreach (KeyValuePair<string, string> keyValuePair in parameters)
                     {
-                        results.Add(map(reader));
+                        command.Parameters.AddWithValue(keyValuePair.Key, keyValuePair.Value);
+                    }
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.RecordsAffected > 0)
+                            success = true;
+
+                        while (reader.Read())
+                        {
+                            results.Add(map(reader));
+                        }
                     }
                 }
             }
+            return results;
         }
-        return results;
+        catch (System.Exception e)
+        {
+            _logger.LogError($"SQL could not be executed: {e.Message}");
+            return default;
+        }
+
     }
 
 

@@ -1,29 +1,41 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using TikTakWebAPI.DAL;
 using TikTakWebAPI.Models;
+using TikTakWebAPI.Repository;
 
 namespace TikTakWebAPI.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("")]
 public class UserController{
 
+
+    private IUserRepository userRepository;
 
     private readonly ILogger<UserController> _logger;
 
     public UserController(ILogger<UserController> logger){
         _logger = logger;
+        userRepository = new UserRepository(new DAL.DatabaseManager(_logger));
     }
 
     // Create User
-    [HttpPut()]
-    public IActionResult AddUser(){
-        
+    [HttpPut("AddUser")]
+    public IActionResult AddUser(User newUser){
+
+        if (!userRepository.AddUser(newUser))
+            return new BadRequestResult();
+
         return new OkResult();
     }
 
     // Delete User
-    [HttpDelete()]
-    public IActionResult DeleteUser(){
+    [HttpDelete("DeleteUser")]
+    public IActionResult DeleteUser(string username){
+
+        if (!userRepository.DeleteUser(username))
+            return new BadRequestResult();
 
         return new OkResult();
     }
@@ -31,14 +43,29 @@ public class UserController{
     // Get User
     [HttpGet("GetUserByUsername")]
     public User GetUserByUsername(string username){
-        return null;
+        return userRepository.GetUserByUsername(username);
     }
 
     // Get User's videos
-    [HttpGet("GetAllUserVideos")]
+    [HttpGet("{username}/Videos")]
     public List<Video> GetAllVideoFromUser(string username){
         return null;
     }
 
-    // 
+    // Update User
+    [HttpPut("{username}/UpdateBio")]
+    public IActionResult UpdateUser(string username, string bio){
+        
+        User user = userRepository.GetUserByUsername(username);
+        if (user == null)
+            return new BadRequestResult();
+
+        user.Bio = bio;
+        
+        if(!userRepository.UpdateUser(user)){
+            return new BadRequestResult();
+        }
+        
+        return new OkResult();
+    }
 }
