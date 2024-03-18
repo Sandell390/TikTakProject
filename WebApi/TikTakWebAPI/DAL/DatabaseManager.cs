@@ -17,7 +17,7 @@ public class DatabaseManager
         _logger = logger;
     }
 
-    public IEnumerable<T>? Query<T>(string sql, Func<IDataReader, T> map, out bool success, Dictionary<string, string> parameters = null)
+    public IEnumerable<T>? Query<T>(string sql, Func<IDataReader, T> map, out bool success, Dictionary<string, object> parameters = null)
     {
         success = false;
         var results = new List<T>();
@@ -28,7 +28,7 @@ public class DatabaseManager
                 connection.Open();
                 using (var command = new NpgsqlCommand(sql, connection))
                 {
-                    foreach (KeyValuePair<string, string> keyValuePair in parameters)
+                    foreach (KeyValuePair<string, object> keyValuePair in parameters)
                     {
                         command.Parameters.AddWithValue(keyValuePair.Key, keyValuePair.Value);
                     }

@@ -48,7 +48,7 @@ public class TranscodeVideoController : ControllerBase
 
         _videoProcess.AddVideo(filePath, outputDir);
 
-        return "File received, the server is proccessing the video";
+        return "{\"videoID\": \""+ fileId + "\"}";
     }
 
     [HttpGet("stream/{name}/thumbnail")]
