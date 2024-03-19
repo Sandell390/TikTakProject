@@ -17,6 +17,35 @@ public class DatabaseManager
         _logger = logger;
     }
 
+    public bool NonQuery(string sql, Dictionary<string, string> parameters = null){
+        try
+        {
+            int rowsAffected = 0;
+            using (var connection = new NpgsqlConnection(_connString))
+            {
+                connection.Open();
+                using (var command = new NpgsqlCommand(sql, connection))
+                {
+                    foreach (KeyValuePair<string, string> keyValuePair in parameters)
+                    {
+                        command.Parameters.AddWithValue(keyValuePair.Key, keyValuePair.Value);
+                    }
+                    rowsAffected = command.ExecuteNonQuery();
+                }
+            }
+
+            if (rowsAffected > 0)
+                return true;
+            
+            return false;
+        }
+        catch (System.Exception e)
+        {
+            _logger.LogError($"SQL could not be executed: {e.Message}");
+            return false;
+        }
+    }
+
     public IEnumerable<T>? Query<T>(string sql, Func<IDataReader, T> map, out bool success, Dictionary<string, string> parameters = null)
     {
         success = false;

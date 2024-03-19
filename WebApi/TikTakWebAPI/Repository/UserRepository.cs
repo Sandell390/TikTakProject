@@ -20,8 +20,7 @@ public class UserRepository(DatabaseManager databaseManager) : IUserRepository
             { "bio", user.Bio! }
         };
 
-        _databaseManager.Query(sql, reader => true, out bool success, parameters);
-        return success;
+        return _databaseManager.NonQuery(sql, parameters);
     }
 
     public bool DeleteUser(string username)
@@ -31,8 +30,7 @@ public class UserRepository(DatabaseManager databaseManager) : IUserRepository
         {
             { "username", username}
         };
-        _databaseManager.Query(sql, reader => true, out bool success, parameters);
-        return success;
+        return _databaseManager.NonQuery(sql, parameters);
     }
 
     public User GetUserByGoogleId(string googleId)
@@ -77,8 +75,7 @@ public class UserRepository(DatabaseManager databaseManager) : IUserRepository
             { "bio", user.Bio! }
         };
 
-        _databaseManager.Query(sql, reader => true, out bool success, parameters);
-        return success;
+        return _databaseManager.NonQuery(sql, parameters);
     }
 
     public bool SetDeletionRequestByUsername(bool deletionRequest, string username)
@@ -93,7 +90,6 @@ public class UserRepository(DatabaseManager databaseManager) : IUserRepository
 
         parameters.Add("username", username);
 
-        _databaseManager.Query(sql, reader => true, out bool success, parameters);
-        return success;
+        return _databaseManager.NonQuery(sql, parameters);
     }
 }

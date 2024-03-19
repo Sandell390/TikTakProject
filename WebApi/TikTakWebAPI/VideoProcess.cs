@@ -21,7 +21,7 @@ public class VideoProcess
             foreach (var videotuple in videosPaths.GetConsumingEnumerable())
             {
                 string filename = Path.GetFileNameWithoutExtension(videotuple.Item1);
-                
+
                 _logger.LogInformation($"Starting proccessing on {filename}");
                 _logger.LogDebug("FilePath:" + videotuple.Item1);
                 _logger.LogDebug("Output Dir:" + videotuple.Item2);
@@ -33,14 +33,15 @@ public class VideoProcess
         });
     }
 
-    private Task StartVideoProcessAsync((string, string) videotuple){
+    private Task StartVideoProcessAsync((string, string) videotuple)
+    {
         string filename = Path.GetFileNameWithoutExtension(videotuple.Item1);
         Video240p(videotuple.Item1, videotuple.Item2);
         _logger.LogInformation($"240p done for  {filename}");
         Video360p(videotuple.Item1, videotuple.Item2);
 
         _logger.LogInformation($"360p done for  {filename}");
-        
+
         Video480p(videotuple.Item1, videotuple.Item2);
         _logger.LogInformation($"480p done for  {filename}");
 
@@ -64,7 +65,8 @@ public class VideoProcess
         videosPaths.Add((filepath, outputDir));
     }
 
-    private void MakeThumbnail(string filepath, string outputDir){
+    private void MakeThumbnail(string filepath, string outputDir)
+    {
         string command = $"ffmpeg -i \"{filepath}\" -frames:v 1 {outputDir}/thumbnail.png";
 
         RunCommand(command);
@@ -133,23 +135,26 @@ public class VideoProcess
     private void MakeIndexFile(string filepath, string outputDir, string videoname)
     {
         _logger.LogInformation(filepath);
-        //Create index as master playlist  
         string path = outputDir + "/index.m3u8";
+
+        //Create index as master playlist  
         File.Create(path).Dispose();
-        string[] line ={
+
+        string[] line = [
                     "#EXTM3U",
-                    "#EXT-X-VERSION:3",
-                    "#EXT-X-STREAM-INF:BANDWIDTH=10000,RESOLUTION=240x426",
-                    $"../stream/{videoname}/240p.m3u8",
-                    "#EXT-X-STREAM-INF:BANDWIDTH=420000,RESOLUTION=360x640",
-                    $"../stream/{videoname}/360p.m3u8",
-                    "#EXT-X-STREAM-INF:BANDWIDTH=680000,RESOLUTION=480x842",
-                    $"../stream/{videoname}/480p.m3u8",
-                    "#EXT-X-STREAM-INF:BANDWIDTH=1256000,RESOLUTION=720x1280",
-                    $"../stream/{videoname}/720p.m3u8",
-                    "#EXT-X-STREAM-INF:BANDWIDTH=2000000,RESOLUTION=1080x1920",
-                    $"../stream/{videoname}/1080p.m3u8"
-                };
+                "#EXT-X-VERSION:3",
+                "#EXT-X-STREAM-INF:BANDWIDTH=10000,RESOLUTION=240x426",
+                $"/Videos/{videoname}/240p.m3u8",
+                "#EXT-X-STREAM-INF:BANDWIDTH=420000,RESOLUTION=360x640",
+                $"/Videos/{videoname}/360p.m3u8",
+                "#EXT-X-STREAM-INF:BANDWIDTH=680000,RESOLUTION=480x842",
+                $"/Videos/{videoname}/480p.m3u8",
+                "#EXT-X-STREAM-INF:BANDWIDTH=1256000,RESOLUTION=720x1280",
+                $"/Videos/{videoname}/720p.m3u8",
+                "#EXT-X-STREAM-INF:BANDWIDTH=2000000,RESOLUTION=1080x1920",
+                $"/Videos/{videoname}/1080p.m3u8"
+                ];
+
         File.WriteAllLines(path, line);
     }
 
