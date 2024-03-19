@@ -17,7 +17,7 @@ public class DatabaseManager
         _logger = logger;
     }
 
-    public bool NonQuery(string sql, Dictionary<string, string> parameters = null){
+    public bool NonQuery(string sql, Dictionary<string, object> parameters = null){
         try
         {
             int rowsAffected = 0;
@@ -26,7 +26,7 @@ public class DatabaseManager
                 connection.Open();
                 using (var command = new NpgsqlCommand(sql, connection))
                 {
-                    foreach (KeyValuePair<string, string> keyValuePair in parameters)
+                    foreach (KeyValuePair<string, object> keyValuePair in parameters)
                     {
                         command.Parameters.AddWithValue(keyValuePair.Key, keyValuePair.Value);
                     }
@@ -46,7 +46,7 @@ public class DatabaseManager
         }
     }
 
-    public IEnumerable<T>? Query<T>(string sql, Func<IDataReader, T> map, out bool success, Dictionary<string, string> parameters = null)
+    public IEnumerable<T>? Query<T>(string sql, Func<IDataReader, T> map, out bool success, Dictionary<string, object> parameters = null)
     {
         success = false;
         var results = new List<T>();
