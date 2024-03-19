@@ -12,7 +12,7 @@ public class UserRepository(DatabaseManager databaseManager) : IUserRepository
     public bool AddUser(User user)
     {
         string sql = "INSERT INTO users (username, googleId, avatarImgUrl, bio) values (@username, @googleId, @avatarImgUrl, @bio)";
-        Dictionary<string, string> parameters = new Dictionary<string, string>
+        Dictionary<string, object> parameters = new Dictionary<string, object>
         {
             { "username", user.Username! },
             { "googleId", user.GoogleId! },
@@ -23,20 +23,20 @@ public class UserRepository(DatabaseManager databaseManager) : IUserRepository
         return _databaseManager.NonQuery(sql, parameters);
     }
 
-    public bool DeleteUser(string username)
+    public bool DeleteUser(string googleId)
     {
-        string sql = "DELETE FROM users WHERE username = @username";
-        Dictionary<string, string> parameters = new Dictionary<string, string>
+        string sql = "DELETE FROM users WHERE googleId = @googleId";
+        Dictionary<string, object> parameters = new Dictionary<string, object>
         {
-            { "username", username}
+            { "googleId", googleId}
         };
         return _databaseManager.NonQuery(sql, parameters);
     }
 
     public User GetUserByGoogleId(string googleId)
     {
-        string sql = "SELECT * FROM User WHERE googleId = @googleId";
-        Dictionary<string, string> parameters = new Dictionary<string, string>
+        string sql = "SELECT * FROM users WHERE googleId = @googleId";
+        Dictionary<string, object> parameters = new Dictionary<string, object>
         {
             { "googleId", googleId }
         };
@@ -51,7 +51,7 @@ public class UserRepository(DatabaseManager databaseManager) : IUserRepository
     public User GetUserByUsername(string username)
     {
         string sql = "SELECT * FROM users WHERE username = @username";
-        Dictionary<string, string> parameters = new Dictionary<string, string>
+        Dictionary<string, object> parameters = new Dictionary<string, object>
         {
             { "username", username }
         };
@@ -67,10 +67,10 @@ public class UserRepository(DatabaseManager databaseManager) : IUserRepository
 
     public bool UpdateUser(User user)
     {
-        string sql = "UPDATE users SET avatarImgUrl = @avatarImgUrl, bio = @bio WHERE username = @username";
-        Dictionary<string, string> parameters = new Dictionary<string, string>
+        string sql = "UPDATE users SET avatarImgUrl = @avatarImgUrl, bio = @bio WHERE googleId = @googleId";
+        Dictionary<string, object> parameters = new Dictionary<string, object>
         {
-            { "username", user.Username! },
+            { "googleId", user.GoogleId! },
             { "avatarImgUrl", user.AvatarImageUrl! },
             { "bio", user.Bio! }
         };
@@ -78,17 +78,17 @@ public class UserRepository(DatabaseManager databaseManager) : IUserRepository
         return _databaseManager.NonQuery(sql, parameters);
     }
 
-    public bool SetDeletionRequestByUsername(bool deletionRequest, string username)
+    public bool SetDeletionRequestByUsername(bool deletionRequest, string googleId)
     {
-        string sql = "UPDATE users SET deletionRequestTime = @deletionRequestTime WHERE username = @username";
-        Dictionary<string, string> parameters = new Dictionary<string, string>();
+        string sql = "UPDATE users SET deletionRequestTime = @deletionRequestTime WHERE googleId = @googleId";
+        Dictionary<string, object> parameters = new Dictionary<string, object>();
 
         if (deletionRequest)
             parameters.Add("deletionRequestTime", DateTime.Now.ToString());
         else
             parameters.Add("deletionRequestTime", null);
 
-        parameters.Add("username", username);
+        parameters.Add("googleId", googleId);
 
         return _databaseManager.NonQuery(sql, parameters);
     }

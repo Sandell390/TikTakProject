@@ -46,6 +46,11 @@ public class UserController{
         return userRepository.GetUserByUsername(username);
     }
 
+    [HttpGet("GetUserByGoogleId")]
+    public User GetUserByGoogleId(string googleId){
+        return userRepository.GetUserByGoogleId(googleId);
+    }
+
     // Get User's videos
     [HttpGet("{username}/Videos")]
     public List<Video> GetAllVideoFromUser(string username){
