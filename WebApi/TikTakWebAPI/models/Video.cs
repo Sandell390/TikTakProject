@@ -6,7 +6,7 @@ public class Video(string id, string title, string description,string ownerGoogl
     public string Description { get; set; } = description;
     public string OwnerGoogleID { get; set; } = ownerGoogleID;
     public int Likes { get; set; } = likes;
-    public List<string>? CommentIDs { get; set; } = commentIDs;
+    public List<string>? CommentIDs { get; set; } = commentIDs == null ? new List<string>() : commentIDs;
     public bool isPublic { get; set; } = isPublic;
     public DateTime UploadTime { get; set; } = uploadTime;
 }

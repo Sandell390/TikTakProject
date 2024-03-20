@@ -53,40 +53,34 @@ public class VideoController{
         return json["videoID"].ToString();
     }
 
-    /*
-    // Delete User
-    [HttpDelete("DeleteUser")]
-    public IActionResult DeleteUser(string username){
+    
+    // Delete Video
+    [HttpDelete("DeleteVideo")]
+    public IActionResult DeleteUser(string videoId){
 
-        if (!userRepository.DeleteUser(username))
+        if (!videoRepository.DeleteVideo(videoId))
             return new BadRequestResult();
 
         return new OkResult();
     }
 
-    // Get User
-    [HttpGet("GetUserByUsername")]
-    public User GetUserByUsername(string username){
-        return userRepository.GetUserByUsername(username);
+    // Get Video
+    [HttpGet("GetVideoById")]
+    public Video GetUserByUsername(string videoId){
+        return videoRepository.GetVideoByVideoId(videoId);
     }
-
-    // Get User's videos
-    [HttpGet("{username}/Videos")]
-    public List<Video> GetAllVideoFromUser(string username){
-        return null;
-    }
-
-    // Update User
-    [HttpPut("{username}/UpdateBio")]
-    public IActionResult UpdateUser(string username, string bio){
+    
+    /*
+    // Update Video
+    [HttpPut("UpdateVideo")]
+    public IActionResult UpdateUser(string videoId){
         
-        User user = userRepository.GetUserByUsername(username);
-        if (user == null)
+        Video video = videoRepository.GetVideoByVideoId(videoId);
+        if (video == null)
             return new BadRequestResult();
 
-        user.Bio = bio;
         
-        if(!userRepository.UpdateUser(user)){
+        if(!videoRepository.UpdateVideo(video)){
             return new BadRequestResult();
         }
         

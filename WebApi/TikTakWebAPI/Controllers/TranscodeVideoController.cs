@@ -32,7 +32,8 @@ public class TranscodeVideoController : ControllerBase
 
         Directory.CreateDirectory(Path.Combine(_env.ContentRootPath, "Videos"));
 
-        string fileId = Guid.NewGuid().ToString();
+        //string fileId = Guid.NewGuid().ToString();
+        string fileId = Path.GetFileNameWithoutExtension(file.FileName);
 
         string filePath = Path.Combine("Videos", fileId + Path.GetExtension(file.FileName));
 

@@ -17,7 +17,8 @@ public class DatabaseManager
         _logger = logger;
     }
 
-    public bool NonQuery(string sql, Dictionary<string, object> parameters = null){
+    public bool NonQuery(string sql, Dictionary<string, object> parameters = null)
+    {
         try
         {
             int rowsAffected = 0;
@@ -36,7 +37,7 @@ public class DatabaseManager
 
             if (rowsAffected > 0)
                 return true;
-            
+
             return false;
         }
         catch (System.Exception e)
@@ -44,6 +45,35 @@ public class DatabaseManager
             _logger.LogError($"SQL could not be executed: {e.Message}");
             return false;
         }
+    }
+
+    public object? QueryScalar(string sql, Dictionary<string, object> parameters = null)
+    {
+
+        using (var connection = new NpgsqlConnection(_connString))
+        {
+            connection.Open();
+            using (NpgsqlCommand cmd = new NpgsqlCommand(sql, connection))
+            {
+                foreach (KeyValuePair<string, object> keyValuePair in parameters)
+                {
+                    cmd.Parameters.AddWithValue(keyValuePair.Key, keyValuePair.Value);
+                }
+                try
+                {
+                    object sqlResult = cmd.ExecuteScalar()!;
+
+                    return sqlResult;
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError("Database Exception: " + e.Message);
+                    return null;
+                }
+            }
+        }
+
+
     }
 
     public IEnumerable<T>? Query<T>(string sql, Func<IDataReader, T> map, out bool success, Dictionary<string, object> parameters = null)

@@ -12,12 +12,14 @@ public class UserController{
 
 
     private IUserRepository userRepository;
+    private IVideoRepository videoRepository;
 
     private readonly ILogger<UserController> _logger;
 
     public UserController(ILogger<UserController> logger){
         _logger = logger;
         userRepository = new UserRepository(new DAL.DatabaseManager(_logger));
+        videoRepository = new VideoRepository(new DAL.DatabaseManager(_logger));
     }
 
     // Create User
@@ -54,7 +56,7 @@ public class UserController{
     // Get User's videos
     [HttpGet("{username}/Videos")]
     public List<Video> GetAllVideoFromUser(string username){
-        return null;
+        return videoRepository.GetVideosByUsername(username);
     }
 
     // Update User
