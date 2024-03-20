@@ -25,7 +25,7 @@ public class VideoRepository(DatabaseManager databaseManager) : IVideoRepository
 
     public bool DeleteVideo(string videoId)
     {
-        string sql = "DELETE FROM videos WHERE videoId = @videoId";
+        string sql = "DELETE FROM videos WHERE id = @videoId";
         Dictionary<string, object> parameters = new Dictionary<string, object>
         {
             { "videoId", videoId}
