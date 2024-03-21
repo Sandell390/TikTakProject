@@ -1,11 +1,12 @@
 namespace TikTakWebAPI.Models;
 
-public class Comment(string commentID,string videoID, string userID, string parentIDComment, string comment,DateTime creationTime ){
+public class Comment(long commentID,string videoID, string userID, long parentIDComment, string commentText,DateTime creationTime ){
 
 
-    public string CommentID { get; private set; } = commentID;
+    public long CommentID { get; private set; } = commentID;
     public string VideoID { get; private set; } = videoID;
     public string UserID { get; private set; } = userID;
-    public string ParentIDComment { get; private set; } = parentIDComment;
+    public long ParentIDComment { get; private set; } = parentIDComment;
+    public string CommentText {get; private set;} = commentText;
     public DateTime CreationTime { get; private set; } = creationTime;
 }

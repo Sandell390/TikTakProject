@@ -51,7 +51,7 @@ public class VideoRepository(DatabaseManager databaseManager) : IVideoRepository
 
         sql = "SELECT * FROM comments WHERE video_id = @videoid";
 
-        List<Comment> comments = _databaseManager.Query(sql, reader => new Comment(reader["id"].ToString(),reader["video_id"].ToString(), reader["googleId"].ToString(), reader["parent_comment_id"].ToString(), reader["comment"].ToString(), DateTime.Parse(reader["creationTime"].ToString())), out success, parameters).ToList();
+        List<Comment> comments = _databaseManager.Query(sql, reader => new Comment((long)reader["id"],reader["video_id"].ToString(), reader["googleId"].ToString(), (long)reader["parent_comment_id"], reader["comment"].ToString(), DateTime.Parse(reader["creationTime"].ToString())), out success, parameters).ToList();
 
         foreach (Comment comment in comments)
         {

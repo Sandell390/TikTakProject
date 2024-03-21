@@ -4,10 +4,10 @@ using TikTakWebAPI.Models;
 
 public interface ICommentRepository{
     bool AddComment(Comment comment);
-    bool DeleteComment(string commentId);
+    bool DeleteComment(long commentId);
     bool UpdateComment(Comment comment);
     List<Comment> GetCommentsByVideoId(string videoId);
-    List<Comment> GetCommentsByUsername(string username);
-    List<Comment> GetCommentsByParentCommentId(string parentCommentId);
-    Comment GetCommentById(string id);
+    List<Comment> GetCommentsByGoogleId(string googleId);
+    List<Comment> GetCommentsByParentCommentId(long parentCommentId);
+    Comment GetCommentById(long id);
 }
