@@ -98,7 +98,7 @@ public class CommentRepository(DatabaseManager databaseManager) : ICommentReposi
             {"video_id", videoId}
         };
 
-        List<long> commentIds = _databaseManager.Query(sql, reader => (long)reader[0], out bool success, parameters).ToList();
+        List<long> commentIds = _databaseManager.Query(sql, reader => (long)reader["id"], out bool success, parameters).ToList();
 
         List<Comment> comments = new List<Comment>();
         foreach (long id in commentIds){
