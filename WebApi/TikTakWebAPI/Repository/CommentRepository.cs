@@ -45,12 +45,12 @@ public class CommentRepository(DatabaseManager databaseManager) : ICommentReposi
         };
 
         Comment comment = _databaseManager.Query(sql, reader => new Comment(
-            (long)reader["id"]!, 
-            reader["video_id"].ToString()!, 
-            reader["googleid"].ToString()!, 
-            (long)reader["parent_comment_id"]!, 
-            reader["comment"].ToString()!,
-            DateTime.Parse(reader["creationtime"].ToString()!)), 
+            (long)reader["id"], 
+            reader["video_id"].ToString(), 
+            reader["googleid"].ToString(), 
+            reader["parent_comment_id"] is System.DBNull ? -1 : (long)reader["parent_comment_id"], 
+            reader["comment"].ToString(),
+            DateTime.Parse(reader["creationtime"].ToString())), 
             out bool success, 
             parameters)?.FirstOrDefault()!;
 
