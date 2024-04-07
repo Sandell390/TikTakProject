@@ -9,6 +9,7 @@ public class VideoRepository(DatabaseManager databaseManager) : IVideoRepository
     
     public bool AddVideo(Video video)
     {
+        // Test to see how gitbutler works
         string sql = "INSERT INTO videos (id, description, title, googleId, isVideoPublic) values (@id, @description, @title, @googleId, @isVideoPublic)";
         Dictionary<string, object> parameters = new Dictionary<string, object>
         {
